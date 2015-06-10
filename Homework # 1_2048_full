@@ -5,7 +5,7 @@ Clone of 2048 game.
 # @sdlfkorg on June 10, 2015 
 # score: 66/100 
 # when grid_width and grid_height are different, the program can not work.
-# http://www.codeskulptor.org/#poc_indexed_grid.py
+# http://www.codeskulptor.org/#user40_KcKpVkDiI9_21.py
 
 
 import poc_2048_gui
