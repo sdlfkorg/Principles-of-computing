@@ -1,0 +1,121 @@
+"""
+Monte Carlo Tic-Tac-Toe Player
+"""
+# Homework # 2
+# @sdlfkorg on June 14, 2015 
+# score: 84/100 
+# when grid_width and grid_height are different, the program can not work.
+# http://www.codeskulptor.org/#user40_wN2RpVWcHp_5.py
+
+
+
+
+
+import random
+import poc_ttt_gui
+import poc_ttt_provided as provided
+
+# Constants for Monte Carlo simulator
+# You may change the values of these constants as desired, but
+#  do not change their names.
+NTRIALS = 50         # Number of trials to run
+SCORE_CURRENT = 1.0 # Score for squares played by the current player
+SCORE_OTHER = 1.0   # Score for squares played by the other player
+    
+# Add your functions here.
+
+def mc_trial(board, player):
+    while board.check_win() == None:
+        empty = board.get_empty_squares()
+        choice = random.choice(empty)
+        board.move(choice[0], choice[1], player)
+        
+        if player == 2:
+            player = 3
+        else:
+            player = 2
+    
+    return None
+
+
+def mc_update_scores(scores, board, player): 
+    
+    winner=board.check_win()
+    
+    
+    if winner==provided.DRAW:
+        pass
+    
+    step_array=[[0 for row in range(3)]for col in range(3)]
+    
+    for row in range(board.get_dim()):
+        for col in range(board.get_dim()):
+            step_array[row][col]=board.square(row, col)
+            
+            if step_array[row][col]==2:
+                if winner==2:
+                    scores[row][col]+=1
+                else:
+                    scores[row][col]-=1
+            
+            if step_array[row][col]==3:
+                if winner==3:
+                    scores[row][col]+=1
+                else:
+                    scores[row][col]-=1
+        
+
+
+def get_best_move(board, scores):
+    empty_square=board.get_empty_squares()
+    
+    max_score=None
+    
+    
+    for square in range(len(empty_square)):
+        row=empty_square[square][0]
+        col=empty_square[square][1]
+        
+        if scores[row][col]>max_score:
+            choice_step=[]
+            choice_step.append((row, col))
+            
+            max_score=scores[row][col]
+            
+        if scores[row][col]==max_score:
+            choice_step.append((row, col))
+       
+    #print choice_step
+    return random.choice(choice_step)
+    
+
+    
+def mc_move(board, player, trials):
+    scores=[[0 for dummy_row in range(board.get_dim())]for dummy_col in range(board.get_dim())]
+    
+    #mc_trial(board, player)
+    #mc_update_scores(scores, board, player)
+    for dummy_trail in range(trials):
+        trial_board=board.clone()
+        mc_trial(trial_board, player)
+        mc_update_scores(scores, trial_board, player)
+    move=get_best_move(board, scores)
+    
+    return (move[0], move[1])
+
+
+
+
+provided.play_game(mc_move, NTRIALS, False)
+
+#print get_best_move(provided.TTTBoard(2, False, [[provided.EMPTY, provided.EMPTY], [provided.EMPTY, provided.EMPTY]]), [[0, 0], [3, 0]])
+
+
+
+# Test game with the console or the GUI.  Uncomment whichever 
+# you prefer.  Both should be commented out when you submit 
+# for testing to save time.
+
+# provided.play_game(mc_move, NTRIALS, False)        
+poc_ttt_gui.run_gui(3, provided.PLAYERX, mc_move, NTRIALS, False)
+
