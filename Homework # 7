@@ -1,0 +1,131 @@
+"""
+Mini-max Tic-Tac-Toe Player
+"""
+# Homework # 7
+# @sdlfkorg on August 3, 2015 
+# score: 100/100 
+# 
+# http://www.codeskulptor.org/#user40_47VSII1xzt_9.py
+
+
+import poc_ttt_gui
+import poc_ttt_provided as provided
+
+# Set timeout, as mini-max can take a long time
+import codeskulptor
+codeskulptor.set_timeout(60)
+
+# SCORING VALUES - DO NOT MODIFY
+SCORES = {provided.PLAYERX: 1,
+          provided.DRAW: 0,
+          provided.PLAYERO: -1}
+
+def mm_move(board, player):
+    """
+    Make a move on the board.
+    
+    Returns a tuple with two elements.  The first element is the score
+    of the given board and the second element is the desired move as a
+    tuple, (row, col).
+    """
+ 
+ 
+    
+    winner = board.check_win()
+    move = ()
+    score = 0
+    if winner != None:
+        if winner == provided.PLAYERX:
+            score = SCORES[provided.PLAYERX]
+        if winner == provided.PLAYERO:
+            score = SCORES[provided.PLAYERO]
+        if winner == provided.DRAW:
+            score = 0
+        move = (-1, -1)
+        return score, move    
+    
+    
+    
+    empty_squares = board.get_empty_squares()
+    #print empty_squares
+
+ 
+    if player == provided.PLAYERX:
+        
+        best_move = ()
+        best_score = -1
+        
+        for square in empty_squares:
+            #print square
+            child = board.clone()
+            #print child
+            child.move(square[0], square[1], player)
+            #print child
+            candidate_move = (square[0], square[1])
+            #print candidate_move
+            #print candidate_move
+            score, move = mm_move(child, provided.PLAYERO)
+            #print score, move
+            if score > best_score:
+                best_score = score
+                best_move = candidate_move
+                #print best_move
+            if score == SCORES[player]:  
+                return score, candidate_move   
+       
+            
+        #print  best_score, best_move   
+        return best_score, best_move
+
+
+ 
+        
+    if player == provided.PLAYERO:
+        best_move = ()
+        best_score = 1
+        for square in empty_squares:
+            child = board.clone()
+            child.move(square[0], square[1], player)
+            candidate_move = (square[0], square[1])
+            score, move = mm_move(child, provided.PLAYERX)
+            if score < best_score:
+                best_score = score
+                best_move = candidate_move
+                if score == SCORES[player]:  
+                    return score, candidate_move                
+            
+        return best_score, best_move    
+        
+        
+        
+        
+    
+    
+    
+
+def move_wrapper(board, player, trials):
+    """
+    Wrapper to allow the use of the same infrastructure that was used
+    for Monte Carlo Tic-Tac-Toe.
+    """
+    move = mm_move(board, player)
+    assert move[1] != (-1, -1), "returned illegal move (-1, -1)"
+    return move[1]
+
+# Test game with the console or the GUI.
+# Uncomment whichever you prefer.
+# Both should be commented out when you submit for
+# testing to save time.
+
+
+#mm_move(provided.TTTBoard(3, False, [[provided.PLAYERX, provided.EMPTY, provided.EMPTY], [provided.PLAYERO, provided.PLAYERO, provided.PLAYERX], [provided.PLAYERO, provided.PLAYERX, provided.EMPTY]]), provided.PLAYERX)   
+
+#MYBOARD1 = provided.TTTBoard(3, False, [[provided.PLAYERO, provided.PLAYERX, provided.PLAYERX], [provided.PLAYERO, provided.PLAYERX, provided.PLAYERO], [provided.PLAYERX, provided.PLAYERO, provided.EMPTY]])
+#print "start\n", MYBOARD1
+#move_wrapper(MYBOARD1, provided.PLAYERX, 2)
+
+
+
+#provided.play_game(move_wrapper, 1, False)        
+#poc_ttt_gui.run_gui(2, provided.PLAYERO, move_wrapper, 1, False)
+
